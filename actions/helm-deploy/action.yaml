@@ -1,0 +1,35 @@
+name: Deploy
+
+inputs:
+  KUBECONFIG:
+    required: true
+  REGISTRY:
+    required: true
+  SERVICE_NAME:
+    required: true
+  HOST:
+    required: true
+  NAMESPACE:
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Helm
+      run: |
+        curl -fsSL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+        mkdir ${HOME}/.kube
+        echo ${{ inputs.KUBECONFIG }} | base64 --decode > ${HOME}/.kube/config
+      shell: bash
+
+    - name: Helm Upgrade
+      run: |
+        echo 'helm upgrade --install ${{ inputs.SERVICE_NAME }} ./helm \
+          --values=./helm/values.yaml \
+          --set image.repository=${{ inputs.REGISTRY }}/${{ inputs.SERVICE_NAME }} \
+          --set image.tag=${{ github.sha }} \
+          --set ingress.hosts[0].host=${{ inputs.HOST }} \
+          --set ingress.tls[0].secretName=${{ inputs.HOST }} \
+          --set ingress.tls[0].hosts[0]=${{ inputs.HOST }} \
+          --namespace ${{ inputs.NAMESPACE }}'
+      shell: bash
