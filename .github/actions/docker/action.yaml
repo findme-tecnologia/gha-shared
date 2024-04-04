@@ -1,0 +1,30 @@
+name: 'Docker build and push'
+description: 'Docker build and push image to registry'
+inputs:
+  REGISTRY:
+    description: ''
+    required: true
+  REGISTRY_USER:
+    description: ''
+    required: true
+  REGISTRY_PASS:
+    description: ''
+    required: true
+  IMAGE_NAME:
+    description: ''
+    required: false
+    default: service-mailer
+runs:
+  using: composite
+  steps:
+    - name: Docker Login
+      run: echo ${{ inputs.REGISTRY_PASS }} | docker login ${{ inputs.REGISTRY }} -u ${{ inputs.REGISTRY_USER }} --password-stdin
+      shell: bash
+      
+    - name: Build Docker Image
+      run: docker build -t ${{ inputs.REGISTRY }}/${{ inputs.IMAGE_NAME}}:${{ github.sha }} .
+      shell: bash
+    
+    - name: Push Docker Image
+      run: docker push ${{ inputs.REGISTRY }}/${{ inputs.IMAGE_NAME}}:${{ github.sha }}
+      shell: bash
