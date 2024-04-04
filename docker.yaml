@@ -12,8 +12,7 @@ inputs:
     required: true
   IMAGE_NAME:
     description: ''
-    required: false
-    default: service-mailer
+    required: true
 runs:
   using: composite
   steps:
