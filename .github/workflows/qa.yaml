@@ -26,7 +26,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ needs.qa.outputs.node-version }}
+          node-version: ${{ needs.node-version.outputs.node-version }}
       - name: Install dependencies
         uses: findme-tecnologia/gha-shared/.github/actions/cached-deps@main
       - name: Audit packages
@@ -43,7 +43,7 @@ jobs:
   #    - name: Setup Node.js
   #      uses: actions/setup-node@v3
   #      with:
-  #        node-version: ${{ needs.qa.outputs.node-version }}
+  #        node-version: ${{ needs.node-version.outputs.node-version }}
   #    - name: Install dependencies
   #      uses: findme-tecnologia/gha-shared/.github/actions/cached-deps@main
   #    - name: Initialize CodeQL
@@ -62,7 +62,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ needs.qa.outputs.node-version }}
+          node-version: ${{ needs.node-version.outputs.node-version }}
       - name: Install dependencies
         uses: findme-tecnologia/gha-shared/.github/actions/cached-deps@main
       - name: Eslint
@@ -77,7 +77,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ needs.qa.outputs.node-version }}
+          node-version: ${{ needs.node-version.outputs.node-version }}
       - name: Install dependencies
         uses: findme-tecnologia/gha-shared/.github/actions/cached-deps@main
       - name: Test
