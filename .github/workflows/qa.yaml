@@ -36,12 +36,16 @@ jobs:
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
+    needs: node-version
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ needs.qa.outputs.node-version }}
+      - name: Install dependencies
+        uses: findme-tecnologia/gha-shared/.github/actions/cached-deps@main
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
