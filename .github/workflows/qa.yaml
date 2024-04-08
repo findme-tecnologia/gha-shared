@@ -5,6 +5,9 @@ jobs:
   node-version:
     name: "Node Version"
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && 
+      (github.event.action == 'opened' || github.event.action == 'synchronize') && 
+      github.event.pull_request.base.ref == 'main'
     outputs:
       node-version: ${{ steps.extract_version.outputs.version }}
     steps:
