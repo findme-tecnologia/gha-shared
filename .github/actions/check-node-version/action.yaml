@@ -11,7 +11,7 @@ runs:
       id: extract_version
       run: |
         VERSION=$(grep -oP 'node:[^\s]+' Dockerfile | cut -d ':' -f2 | head -n 1 | sed 's/-.*//')
-        echo "::set-output name=version::$VERSION"
+        echo "::save-state name=version::$VERSION"
       shell: bash
 
     - name: Check Node Version in package.json
