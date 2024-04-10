@@ -1,0 +1,15 @@
+name: 'Extract Node version from Dockerfile'
+description: 'Extract Node version from Dockerfile'
+outputs:
+  version:
+    description: 'Node version'
+    value: ${{ steps.extract_version.outputs.version }}
+runs:
+  using: composite
+  steps:
+    - name: "Extract version from Dockerfile"
+      id: extract_version
+      run: |
+        VERSION=$(grep -oP 'node:[^\s]+' Dockerfile | cut -d ':' -f2 | head -n 1 | sed 's/-.*//')
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      shell: bash

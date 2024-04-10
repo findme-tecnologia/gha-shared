@@ -1,0 +1,15 @@
+name: 'Extract Node version from package.json'
+description: 'Extract Node version from package.json'
+outputs:
+  version:
+    description: 'Node version'
+    value: ${{ steps.extract_version.outputs.version }}
+runs:
+  using: composite
+  steps:
+    - name: "Extract version from package.json"
+      id: extract_version
+      run: |
+        VERSION=$(jq -r '.engines.node' package.json)
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      shell: bash
