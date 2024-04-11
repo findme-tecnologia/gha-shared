@@ -14,7 +14,7 @@ runs:
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: ${{ imputs.node-version }}
+        node-version: ${{ inputs.node-version }}
     - name: Cache node modules
       id: cache-nodemodules
       uses: actions/cache@v2
