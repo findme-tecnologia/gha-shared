@@ -1,0 +1,19 @@
+name: 'Check Node version'
+description: 'Check the node version by comparing package.json and Dockerfile'
+inputs:
+  version-from-dockerfile:
+    description: 'Dockerfile Node version'
+    required: true
+  version-from-package:
+    description: 'Package Node version'
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Check Node Version
+      run: |
+        if [[ "${{ inputs.version-from-dockerfile }}" != "${{ inputs.version-from-package }}" ]]; then
+          echo "ERROR: The Node.js versions in the Dockerfile (${{ inputs.version-from-dockerfile }}) and package.json (${{ inputs.version-from-package }}) are different."
+          exit 1
+        fi
+      shell: bash

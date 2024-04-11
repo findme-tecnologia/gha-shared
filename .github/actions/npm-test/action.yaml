@@ -1,0 +1,27 @@
+name: 'NPM Lint'
+description: 'NPM Lint'
+inputs:
+  node-version:
+    description: 'Node version'
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ imputs.node-version }}
+    - name: NPM Cached
+      id: cache-nodemodules
+      uses: findme-tecnologia/gha-shared/.github/actions/npm-cached@main
+      with:
+        node-version: ${{ imputs.node-version }}
+    - name: Install dependencies
+      if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+      run: npm i
+      shell: bash
+    - name: Test
+      run: npm test    
+      env:
+        CI: "true"
+      shell: bash
