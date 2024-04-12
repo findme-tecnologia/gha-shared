@@ -9,7 +9,7 @@ jobs:
       (github.event.action == 'opened' || github.event.action == 'synchronize') && 
       github.event.pull_request.base.ref == 'main'
     outputs:
-      node-version: ${{ steps.extract_version.outputs.version }}
+      version: ${{ steps.extract_version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -23,30 +23,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: NPM Audit
+        uses: findme-tecnologia/gha-shared/.github/actions/npm-audit@main
         with:
-          node-version: ${{ needs.node-version.outputs.node-version }}
-      - name: Cache node modules
-        id: cache-nodemodules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - name: Install dependencies
-        if: steps.cache-nodemodules.outputs.cache-hit != 'true'
-        run: npm i
-        shell: bash
-      - name: Audit packages
-        run: npm audit --audit-level moderate
-        env:
-          CI: true
+          node-version: ${{ needs.node-version.outputs.version }}
   lint:
     name: "Lint"
     runs-on: ubuntu-latest
@@ -54,28 +34,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: NPM Audit
+        uses: findme-tecnologia/gha-shared/.github/actions/npm-lint@main
         with:
-          node-version: ${{ needs.node-version.outputs.node-version }}
-      - name: Cache node modules
-        id: cache-nodemodules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - name: Install dependencies
-        if: steps.cache-nodemodules.outputs.cache-hit != 'true'
-        run: npm i
-        shell: bash
-      - name: Eslint
-        run: npm run lint
+          node-version: ${{ needs.node-version.outputs.version }}
   test:
     name: "Test"
     runs-on: ubuntu-latest
@@ -83,25 +45,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: NPM Test
+        uses: findme-tecnologia/gha-shared/.github/actions/npm-test@main
         with:
-          node-version: ${{ needs.node-version.outputs.node-version }}
-      - name: Cache node modules
-        id: cache-nodemodules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - name: Install dependencies
-        if: steps.cache-nodemodules.outputs.cache-hit != 'true'
-        run: npm i
-        shell: bash
-      - name: Test
-        run: npm test    
+          node-version: ${{ needs.node-version.outputs.version }}
