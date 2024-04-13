@@ -1,5 +1,5 @@
-name: 'NPM Lint'
-description: 'NPM Lint'
+name: 'NPM Test'
+description: 'NPM Test'
 inputs:
   node-version:
     description: 'Node version'
