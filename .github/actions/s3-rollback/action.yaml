@@ -13,5 +13,5 @@ runs:
     - name: Rollback to the latest backup
       run: |
         folder=$(aws s3 ls s3://$bucket/backups/$webname/ | sort | tail -n 1 | awk '{print $2}')
-        aws s3 cp s3://$bucket/backups/$webname/$folder s3://$bucket/latest/$webname/ --recursive
+        aws s3 cp s3://$bucket/backups/$webname/$folder s3://$bucket/latest/$webname/ --recursive --acl public-read
       shell: bash
