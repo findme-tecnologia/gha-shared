@@ -1,0 +1,17 @@
+name: 'S3 Rollback'
+description: 'Rollback to the latest backup'
+inputs:
+  bucket:
+    description: 'Bucket name'
+    required: true
+  webname:
+    description: 'Web name'
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Rollback to the latest backup
+      run: |
+        folder=$(aws s3 ls s3://$bucket/backups/$webname/ | sort | tail -n 1 | awk '{print $2}')
+        aws s3 cp s3://$bucket/backups/$webname/$folder s3://$bucket/latest/$webname/ --recursive
+      shell: bash
