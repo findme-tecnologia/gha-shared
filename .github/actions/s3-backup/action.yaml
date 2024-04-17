@@ -1,0 +1,17 @@
+name: 'Create backup of latest directory'
+description: 'Create backup of latest directory'
+inputs:
+  bucket:
+    description: 'Bucket name'
+    required: true
+  webname:
+    description: 'Web name'
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Create backup of 'latest' directory
+      run: |
+        TIMESTAMP=$(date +"%Y%m%d%H%M%S")
+        aws s3 cp s3://${{ inputs.bucket }}/latest/${{ inputs.webname }}/ s3://${{ inputs.bucket }}/backups/${{ inputs.webname }}/$TIMESTAMP/ --recursive
+      shell: bash
