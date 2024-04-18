@@ -30,7 +30,8 @@ jobs:
   lint:
     name: "Lint"
     runs-on: ubuntu-latest
-    needs: node-version
+    needs: audit
+    if: always()
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -41,7 +42,8 @@ jobs:
   test:
     name: "Test"
     runs-on: ubuntu-latest
-    needs: node-version
+    needs: lint
+    if: always()
     steps:
       - name: Checkout
         uses: actions/checkout@v2
