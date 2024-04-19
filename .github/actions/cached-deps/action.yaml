@@ -1,5 +1,10 @@
 name: 'Get & Cache Dependencies'
 description: 'Get the dependencies (via npm) and cache then'
+inputs:
+  force:
+    description: 'NPM install with --force'
+    required: false
+    default: false
 runs:
   using: composite
   steps:
@@ -17,5 +22,10 @@ runs:
           ${{ runner.os }}-
     - name: Install dependencies
       if: steps.cache-nodemodules.outputs.cache-hit != 'true'
-      run: npm ci
+      run: |
+        if [ ${{ inputs.force }} == "true" ]; then
+          npm ci --force
+        else
+          npm ci
+        fi
       shell: bash
