@@ -4,6 +4,10 @@ inputs:
   node-version:
     description: 'Node version'
     required: true
+  force:
+    description: 'NPM install with --force'
+    required: false
+    default: false
 runs:
   using: composite
   steps:
@@ -18,7 +22,12 @@ runs:
         node-version: ${{ inputs.node-version }}
     - name: Install dependencies
       if: steps.cache-nodemodules.outputs.cache-hit != 'true'
-      run: npm i
+      run: |
+        if [ ${{ inputs.force }} == "true" ]; then
+          npm i --force
+        else
+          npm i
+        fi
       shell: bash
     - name: Test
       run: npm test    
