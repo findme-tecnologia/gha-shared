@@ -19,6 +19,10 @@ inputs:
   webname:
     description: 'Web name'
     required: true
+  gzip:
+    description: 'content-encoding gzip'
+    required: false
+    default: "false"
 runs:
   using: composite
   steps:
@@ -45,3 +49,4 @@ runs:
       with:
         bucket: ${{ inputs.bucket }}
         webname: ${{ inputs.webname }}
+        gzip: ${{ inputs.gzip }}
