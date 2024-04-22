@@ -7,9 +7,18 @@ inputs:
   webname:
     description: 'Web name'
     required: true
+  gzip:
+    description: 'content-encoding gzip'
+    required: false
+    default: "false"
 runs:
   using: composite
   steps:
     - name: Deploy to S3
-      run: aws s3 cp ./ s3://${{ inputs.bucket }}/latest/${{ inputs.webname }}/ --recursive --acl public-read
+      run: |
+        if [ ${{ inputs.gzip }} == "true" ]; then
+          aws s3 cp ./ s3://${{ inputs.bucket }}/latest/${{ inputs.webname }}/ --recursive --content-encoding gzip --acl public-read
+        else 
+          aws s3 cp ./ s3://${{ inputs.bucket }}/latest/${{ inputs.webname }}/ --recursive --acl public-read
+        fi
       shell: bash
