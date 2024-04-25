@@ -16,7 +16,7 @@ runs:
   steps:
     - name: Deploy to S3
       run: |
-        if [ ${{ inputs.gzip }} == "true" ]; then
+        if [ "${{ inputs.gzip }}" == "true" ]; then
           aws s3 cp ./ s3://${{ inputs.bucket }}/latest/${{ inputs.webname }}/ --recursive --content-encoding gzip --acl public-read
         else 
           aws s3 cp ./ s3://${{ inputs.bucket }}/latest/${{ inputs.webname }}/ --recursive --acl public-read
