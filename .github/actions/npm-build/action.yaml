@@ -1,5 +1,5 @@
-name: "NPM Lint"
-description: "NPM Lint"
+name: "NPM Build"
+description: "NPM Build"
 inputs:
   node-version:
     description: "Node version"
@@ -30,7 +30,7 @@ runs:
         fi
       shell: bash
     - name: Build
-      run: npm run tsc
+      run: npm run build:ci
       env:
         CI: "true"
       shell: bash
