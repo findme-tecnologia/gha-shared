@@ -1,13 +1,13 @@
-name: 'NPM Test'
-description: 'NPM Test'
+name: "NPM Test"
+description: "NPM Test"
 inputs:
   node-version:
-    description: 'Node version'
+    description: "Node version"
     required: true
   force:
-    description: 'NPM install with --force'
+    description: "NPM install with --force"
     required: false
-    default: false
+    default: "false"
 runs:
   using: composite
   steps:
@@ -23,14 +23,14 @@ runs:
     - name: Install dependencies
       if: steps.cache-nodemodules.outputs.cache-hit != 'true'
       run: |
-        if [ ${{ inputs.force }} == "true" ]; then
+        if [ "${{ inputs.force }}" == "true" ]; then
           npm i --force
         else
           npm i
         fi
       shell: bash
     - name: Test
-      run: npm test    
+      run: npm test
       env:
         CI: "true"
       shell: bash

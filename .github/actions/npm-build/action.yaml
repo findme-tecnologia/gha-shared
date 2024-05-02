@@ -1,5 +1,5 @@
-name: "NPM Audit"
-description: "NPM Audit"
+name: "NPM Lint"
+description: "NPM Lint"
 inputs:
   node-version:
     description: "Node version"
@@ -29,8 +29,8 @@ runs:
           npm i
         fi
       shell: bash
-    - name: Audit packages
-      run: npm audit --audit-level moderate
+    - name: Build
+      run: npm run tsc
       env:
         CI: "true"
       shell: bash
