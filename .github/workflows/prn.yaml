@@ -1,0 +1,65 @@
+name: PRN
+on:
+  workflow_call:
+jobs:
+  notify-slack:
+    name: Notify Slack
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug Event Context
+        run: |
+          echo "Action: ${{ github.event.action }}"
+          echo "Merged: ${{ github.event.pull_request.merged }}"
+          echo "Review State: ${{ github.event.review.state }}"
+          echo "Base Branch: ${{ github.event.pull_request.base.ref }}"
+          echo "Sender: ${{ github.event.sender.login }}"
+
+      - name: Check if PR is closed, changes requested or approved
+        id: check_event
+        run: |
+          if [[ "${{ github.event.action }}" == "closed" && "${{ github.event.pull_request.merged }}" == "false" ]]; then
+            echo "event_type=closed" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event.review.state }}" == "changes_requested" ]]; then
+            echo "event_type=changes_requested" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event.review.state }}" == "approved" && "${{ github.event.pull_request.base.ref }}" == "main" ]]; then
+            echo "event_type=approved" >> "$GITHUB_OUTPUT"
+          else
+            echo "event_type=none" >> "$GITHUB_OUTPUT"
+          fi
+          echo "Event Type: ${{ steps.check_event.outputs.event_type }}"
+
+      - name: Send notification to Slack for closed PR
+        if: steps.check_event.outputs.event_type == 'closed'
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data \
+            '{
+              "channel": "${{ secrets.SLACK_CHANNEL_ID }}", 
+              "text": "A solicitação '${{ github.event.pull_request.html_url }}' foi fechada sem mesclagem por '${{ github.event.sender.login }}'."
+            }' \
+            $SLACK_WEBHOOK_URL
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Send notification to Slack for changes requested
+        if: steps.check_event.outputs.event_type == 'changes_requested'
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data \
+            '{
+              "channel": "${{ secrets.SLACK_CHANNEL_ID }}", 
+              "text": "Alterações foram solicitadas para '${{ github.event.pull_request.html_url }}' por '${{ github.event.sender.login }}'."
+            }' \
+            $SLACK_WEBHOOK_URL
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      
+      - name: Send notification to Slack for approved PR
+        if: steps.check_event.outputs.event_type == 'approved'
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data \
+            '{
+              "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
+              "text": "A solicitação '${{ github.event.pull_request.html_url }}' foi aprovada por '${{ github.event.sender.login }}'."
+            }' \
+            $SLACK_WEBHOOK_URL
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
