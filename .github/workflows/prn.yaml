@@ -1,6 +1,13 @@
 name: PRN
 on:
   workflow_call:
+    secrets:
+      SLACK_WEBHOOK_URL:
+        description: 'Slack Webhook URL'
+        required: true
+      SLACK_CHANNEL_ID:
+        description: 'Slack Channel ID'
+        required: true
 jobs:
   notify-slack:
     name: Notify Slack
