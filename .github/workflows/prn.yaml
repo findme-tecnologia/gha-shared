@@ -1,15 +1,6 @@
 name: PRN
 on:
   workflow_call:
-    inputs:
-      slack_webhook_url:
-        description: 'Slack Webhook URL'
-        required: true
-        type: string
-      slack_channel_id:
-        description: 'Slack Channel ID'
-        required: true
-        type: string
 jobs:
   notify-slack:
     name: Notify Slack
@@ -42,27 +33,33 @@ jobs:
         run: |
           curl -X POST -H 'Content-type: application/json' --data \
             '{
-              "channel": "${{ inputs.slack_channel_id }}", 
+              "channel": "${{ secrets.SLACK_CHANNEL_ID }}", 
               "text": "A solicitação '${{ github.event.pull_request.html_url }}' foi fechada sem mesclagem por '${{ github.event.sender.login }}'."
             }' \
-            ${{ inputs.slack_webhook_url }}
+            $SLACK_WEBHOOK_URL
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Send notification to Slack for changes requested
         if: steps.check_event.outputs.event_type == 'changes_requested'
         run: |
           curl -X POST -H 'Content-type: application/json' --data \
             '{
-              "channel": "${{ inputs.slack_channel_id }}", 
+              "channel": "${{ secrets.SLACK_CHANNEL_ID }}", 
               "text": "Alterações foram solicitadas para '${{ github.event.pull_request.html_url }}' por '${{ github.event.sender.login }}'."
             }' \
-            ${{ inputs.slack_webhook_url }}
+            $SLACK_WEBHOOK_URL
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       
       - name: Send notification to Slack for approved PR
         if: steps.check_event.outputs.event_type == 'approved'
         run: |
           curl -X POST -H 'Content-type: application/json' --data \
             '{
-              "channel": "${{ inputs.slack_channel_id }}",
+              "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
               "text": "A solicitação '${{ github.event.pull_request.html_url }}' foi aprovada por '${{ github.event.sender.login }}'."
             }' \
-            ${{ inputs.slack_webhook_url }}
+            $SLACK_WEBHOOK_URL
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
