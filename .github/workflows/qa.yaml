@@ -1,6 +1,12 @@
 name: QA
 on:
   workflow_call:
+    inputs:
+      build:
+        description: 'Use build step'
+        required: false
+        type: boolean
+        default: true
 jobs:
   node-version:
     name: "Node Version"
@@ -54,6 +60,7 @@ jobs:
     name: "Build"
     runs-on: ubuntu-latest
     needs: node-version
+    if: ${{ inputs.build }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2

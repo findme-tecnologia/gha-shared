@@ -1,6 +1,12 @@
 name: QA
 on:
   workflow_call:
+    inputs:
+      build:
+        description: 'Use build step'
+        required: false
+        type: boolean
+        default: true
 jobs:
   node-version:
     name: "Extract Node Version"
