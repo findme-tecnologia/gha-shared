@@ -13,14 +13,6 @@ jobs:
     name: Notify Slack
     runs-on: ubuntu-latest
     steps:
-      - name: Debug Event Context
-        run: |
-          echo "Action: ${{ github.event.action }}"
-          echo "Merged: ${{ github.event.pull_request.merged }}"
-          echo "Review State: ${{ github.event.review.state }}"
-          echo "Base Branch: ${{ github.event.pull_request.base.ref }}"
-          echo "Sender: ${{ github.event.sender.login }}"
-
       - name: Check if PR is closed, changes requested or approved
         id: check_event
         run: |
