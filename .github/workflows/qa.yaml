@@ -95,7 +95,7 @@ jobs:
             echo "failure=false" >> $GITHUB_ENV
           fi
       - name: Notify Slack on Failure
-        if: env.failure == 'true' && secrets.SLACK_WEBHOOK_URL && secrets.SLACK_CHANNEL_ID
+        if: env.failure == 'true' && ${{ secrets.SLACK_WEBHOOK_URL }} && ${{ secrets.SLACK_CHANNEL_ID }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
