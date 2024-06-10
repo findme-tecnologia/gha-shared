@@ -7,8 +7,8 @@ inputs:
   slack-webhook-url:
     description: "Slack Webhook URL"
     required: true
-  slack-webhook-channel:
-    description: "Slack Webhook Channel"
+  slack-channel-id:
+    description: "Slack Channel ID"
     required: true
 runs:
   using: composite
@@ -39,7 +39,7 @@ runs:
       run: |
         curl -X POST -H 'Content-type: application/json' --data \
         '{
-          "channel": "${{ inputs.slack-webhook-channel }}",
+          "channel": "${{ inputs.slack-channel-id }}",
           "text": "Uma nova versão do ${{ inputs.service-name }} foi implantada em produção:\n*Title:* '"$PR_TITLE"'\n*URL:* '"$PR_URL"'\n*User:* '"$PR_USER"'"
         }' \
         $SLACK_WEBHOOK_URL
