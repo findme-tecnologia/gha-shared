@@ -10,10 +10,10 @@ on:
     secrets:
       SLACK_WEBHOOK_URL:
         description: 'Slack Webhook URL'
-        required: false
+        required: true
       SLACK_CHANNEL_ID:
         description: 'Slack Channel ID'
-        required: false
+        required: true
 jobs:
   node-version:
     name: "Node Version"
