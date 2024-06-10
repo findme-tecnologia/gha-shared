@@ -1,0 +1,46 @@
+name: "Notify merge in main"
+description: "Notify merge in main"
+inputs:
+  service-name:
+    description: "Service Name"
+    required: true
+  slack-webhook-url:
+    description: "Slack Webhook URL"
+    required: true
+  slack-webhook-channel:
+    description: "Slack Webhook Channel"
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Get Pull Request Data
+      id: pr
+      run: |
+        PR_NUMBER=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" | jq -r '.[0].number')
+        echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+        PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER")
+        PR_TITLE=$(echo $PR_DATA | jq -r '.title')
+        PR_URL=$(echo $PR_DATA | jq -r '.html_url')
+        PR_USER=$(echo $PR_DATA | jq -r '.user.login')
+        echo "PR_TITLE=$PR_TITLE" >> $GITHUB_ENV
+        echo "PR_URL=$PR_URL" >> $GITHUB_ENV
+        echo "PR_USER=$PR_USER" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Send notification to Slack for Production Deploy
+      if: env.PR_NUMBER != 'null'
+      env:
+        SLACK_WEBHOOK_URL: ${{ inputs.slack-webhook-url }}
+        PR_TITLE: ${{ env.PR_TITLE }}
+        PR_URL: ${{ env.PR_URL }}
+        PR_USER: ${{ env.PR_USER }}
+      run: |
+        curl -X POST -H 'Content-type: application/json' --data \
+        '{
+          "channel": "${{ inputs.slack-webhook-channel }}",
+          "text": "Uma nova versão do ${{ inputs.service-name }} foi implantada em produção:\n*Title:* '"$PR_TITLE"'\n*URL:* '"$PR_URL"'\n*User:* '"$PR_USER"'"
+        }' \
+        $SLACK_WEBHOOK_URL
+      shell: bash
