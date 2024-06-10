@@ -96,13 +96,12 @@ jobs:
           fi
       - name: Notify Slack on Failure
         if: ${{ env.failure == 'true' }}
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
         run: |
           curl -X POST -H 'Content-type: application/json' --data \
-          '{
-            "channel": $SLACK_CHANNEL_ID, 
-            "text": "Ocorreu um erro no pipeline de qualidade: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}>"
-          }' \
-          $SLACK_WEBHOOK_URL
+            '{
+              "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
+              "text": "Ocorreu um erro no pipeline de qualidade: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}>"
+            }' \
+            $SLACK_WEBHOOK_URL
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
