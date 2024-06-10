@@ -81,17 +81,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: [node-version, audit, lint, test, build]
     if: >
-      ${{ 
         always() && 
-        (secrets.SLACK_WEBHOOK_URL && secrets.SLACK_CHANNEL_ID) && 
+        (${{ secrets.SLACK_WEBHOOK_URL }} && ${{ secrets.SLACK_CHANNEL_ID }}) && 
         (
           needs.node-version.result == 'failure' || 
           needs.audit.result == 'failure' || 
           needs.lint.result == 'failure' || 
           needs.test.result == 'failure' || 
           needs.build.result == 'failure'
-        ) 
-      }}
+        )
     steps:
       - name: Notify Slack on Failure
         env:
