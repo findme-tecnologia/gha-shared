@@ -86,22 +86,24 @@ jobs:
         id: check_failure
         run: |
           if [[ "${{ needs.node-version.result }}" == "failure" ]] || \
-             [[ "${{ needs.audit.result }}" == "failure" ]] || \
-             [[ "${{ needs.lint.result }}" == "failure" ]] || \
-             [[ "${{ needs.test.result }}" == "failure" ]] || \
-             [[ "${{ needs.build.result }}" == "failure" ]]; then
+              [[ "${{ needs.audit.result }}" == "failure" ]] || \
+              [[ "${{ needs.lint.result }}" == "failure" ]] || \
+              [[ "${{ needs.test.result }}" == "failure" ]] || \
+              [[ "${{ needs.build.result }}" == "failure" ]]; then
             echo "failure=true" >> $GITHUB_ENV
           else
             echo "failure=false" >> $GITHUB_ENV
           fi
+        shell: bash
       - name: Notify Slack on Failure
         if: ${{ env.failure == 'true' }}
         run: |
           curl -X POST -H 'Content-type: application/json' --data \
             '{
               "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
-              "text": "Ocorreu um erro no pipeline de qualidade:\n*Detalhes:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}>"
+              "text": "Falha no pipeline de QA:\n*Repo:* <${{ github.repository }}> \n*Detalhes:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}>"
             }' \
             $SLACK_WEBHOOK_URL
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        shell: bash
