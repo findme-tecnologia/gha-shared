@@ -1,0 +1,37 @@
+name: "Notify failure in QA"
+description: "Notify failure in QA"
+inputs:
+  slack-webhook-url:
+    description: "Slack Webhook URL"
+    required: true
+  slack-channel-id:
+    description: "Slack Channel ID"
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Check if any job failed
+      id: check_failure
+      run: |
+        if [[ "${{ needs.node-version.result }}" == "failure" ]] || \
+            [[ "${{ needs.audit.result }}" == "failure" ]] || \
+            [[ "${{ needs.lint.result }}" == "failure" ]] || \
+            [[ "${{ needs.test.result }}" == "failure" ]] || \
+            [[ "${{ needs.build.result }}" == "failure" ]]; then
+          echo "failure=true" >> $GITHUB_ENV
+        else
+          echo "failure=false" >> $GITHUB_ENV
+        fi
+      shell: bash
+    - name: Notify Slack on Failure
+      if: ${{ env.failure == 'true' }}
+      run: |
+        curl -X POST -H 'Content-type: application/json' --data \
+          '{
+            "channel": "${{ inputs.slack-channel-id }}",
+            "text": "Falha no pipeline de QA:\n*Repo:* <${{ github.repository }}> \n*Detalhes:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}>"
+          }' \
+          $SLACK_WEBHOOK_URL
+      env:
+        SLACK_WEBHOOK_URL: ${{ inputs.slack-webhook-url }}
+      shell: bash
