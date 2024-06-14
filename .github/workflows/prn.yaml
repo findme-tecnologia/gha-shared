@@ -22,10 +22,38 @@ jobs:
             echo "event_type=changes_requested" >> "$GITHUB_OUTPUT"
           elif [[ "${{ github.event.review.state }}" == "approved" && "${{ github.event.pull_request.base.ref }}" == "main" ]]; then
             echo "event_type=approved" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event.action }}" == "opened" && "${{ github.event.pull_request.base.ref }}" == "main" ]]; then
+            echo "event_type=opened" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event.action }}" == "reopened" && "${{ github.event.pull_request.base.ref }}" == "main" ]]; then
+            echo "event_type=reopened" >> "$GITHUB_OUTPUT"
           else
             echo "event_type=none" >> "$GITHUB_OUTPUT"
           fi
           echo "Event Type: ${{ steps.check_event.outputs.event_type }}"
+
+      - name: Notify Slack on PR Opened
+        if: steps.check_event.outputs.event_type == 'opened'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data \
+          '{
+            "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
+            "text": "Uma nova solicitação foi aberta por ${{ github.actor }}.\n*Title:* ${{ github.event.pull_request.title }}\n*URL:* ${{ github.event.pull_request.html_url }}"
+          }' \
+          $SLACK_WEBHOOK_URL
+
+      - name: Notify Slack on PR Reopened
+        if: steps.check_event.outputs.event_type == 'reopened'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data \
+          '{
+            "channel": "${{ secrets.SLACK_CHANNEL_ID }}", 
+            "text": "Uma solicitação de ${{ github.actor }} foi reaberta.\n*Title:* ${{ github.event.pull_request.title }}\n*URL:* ${{ github.event.pull_request.html_url }}"
+          }' \
+          $SLACK_WEBHOOK_URL
 
       - name: Send notification to Slack for closed PR
         if: steps.check_event.outputs.event_type == 'closed'
