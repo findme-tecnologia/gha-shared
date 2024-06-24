@@ -47,7 +47,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: NPM Audit
+      - name: NPM Lint
         uses: findme-tecnologia/gha-shared/.github/actions/npm-lint@main
         with:
           node-version: ${{ needs.node-version.outputs.version }}
